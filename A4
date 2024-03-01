@@ -1,0 +1,88 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+
+
+def stochastic():
+    beta = 3.0*10**-4 #changed beta from 3*10**-3 to 3*10**-4
+    mu = 0.1
+    # Set up arrays to record event times, and values of S, I,R and t after after each event
+    SVec = np.array([])
+    IVec = np.array([])
+    RVec = np.array([])
+    tVec = np.array([])
+
+    # Set up an array to record pre-determined times and values of I at those times
+    tVals = np.array([i*0.5 for i in range(201)])
+    IVals = np.array([0 for i in range(201)])
+    # Set initial conditions and the initial time
+    S = 10**3 - 10
+    I = 10
+    R = 0
+    t = 0
+
+    IVals[0] = I
+
+
+    SVec = np.append(SVec, S)
+    IVec = np.append(IVec, I)
+    RVec = np.append(RVec, R)
+    tVec = np.append(tVec, t)
+
+    while t < 100 and I>0:
+
+        previous_time = t
+
+        r1 = np.random.uniform(0, 1, 1)
+        totalRate = beta*I*S + mu*I
+        #print(totalRate)
+        t = t - (1/totalRate)*np.log(r1)
+
+        new_time = t
+
+        for i in range(201):
+            if previous_time < tVals[i] <= new_time: #added in greater than previous time
+                IVals[i] = I
+
+        r2 = np.random.uniform(0, 1, 1)
+        if r2 < beta*I*S/totalRate: #error 2 added in the /totalrate
+            S = S - 1
+            I = I + 1
+        else:
+            I = I - 1
+            R = R + 1
+
+        SVec = np.append(SVec, S)
+        IVec = np.append(IVec, I)
+        RVec = np.append(RVec, R)
+        tVec = np.append(tVec, t)
+    return(IVals)
+
+
+#I then generated a matrix contianing the average Ivalues from 4 samples at 201 different times
+nrows=100
+stochImat=np.zeros((nrows,201))
+for i in range(0,nrows):
+    stochImat[i]=stochastic()
+#print(stochImat)
+meanIValarray=[]
+for colnumber in range(0,201):
+    values=[]
+    meanposi=[]
+    for rownumber in range(0,nrows):
+        values = np.append(values,stochImat[rownumber,colnumber])   
+    meanposi = np.mean(values)
+    #print(meanposi)
+    meanIValarray = np.append(meanIValarray, meanposi)
+print(meanIValarray)
+
+#I then plotted these mean I values over time
+
+tVals = np.array([i*0.5 for i in range(201)])
+plt.plot(tVals, meanIValarray, lw = 2, label = "IVals")
+
+# labels etc
+plt.xlabel("time", fontsize = 14)
+plt.ylabel("I", fontsize = 14)
+plt.title("Stochastic SIR model mean over 100 simulations", fontsize = 16)
+plt.legend(fontsize = 14)
+plt.show()
