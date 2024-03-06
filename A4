@@ -58,7 +58,7 @@ def stochastic():
     return(IVals)
 
 
-#I then generated a matrix contianing the average Ivalues from 4 samples at 201 different times
+#I then generated a matrix containing the average Ivalues from 4 samples at 201 different times
 nrows=100
 stochImat=np.zeros((nrows,201))
 for i in range(0,nrows):
