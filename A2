@@ -1,0 +1,34 @@
+import numpy as np 
+import matplotlib.pyplot as plt
+from scipy.optimize import fsolve
+from sympy import *
+
+v = np.linspace(0,5000,101)
+
+beta = 2*(10**-5)
+mu = 0.1
+N = 10**4
+
+
+v = np.linspace(0,4000,81)
+f_size = np.zeros(81)
+
+
+for i in range(len(v)):
+    S0 = 10**4 - 5 - v[i]
+    def f(x):
+        return x - N + v[i] + S0*np.exp(-beta*x/mu)
+    f_size[i] = fsolve(f, 4000)
+    
+plt.plot(v, f_size)
+plt.title('Effect of Vaccine on Removed Population') 
+plt.xlabel('Number of people vaccinated')
+plt.ylabel('Final size')
+
+plt.plot(1000, f_size[20], 'o', label = '1000 people vaccinated, '+ str(round(f_size[20]))+ ' people removed') 
+plt.plot(2000, f_size[40], 'o', label = '2000 people vaccinated, '+ str(round(f_size[40]))+ ' people removed') 
+plt.plot(3000, f_size[60], 'o', label = '3000 people vaccinated, '+ str(round(f_size[60]))+ ' people removed') 
+
+plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+plt.show()
+
